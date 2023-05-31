@@ -1,1 +1,2 @@
-import { Something } from '../../../Something/SomeFile'
+import { Something } from "ShellMFE/SomeFile";
+import { CommonFile } from "CommonMFE/CommonFile";
