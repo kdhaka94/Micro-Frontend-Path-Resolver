@@ -1,0 +1,17 @@
+{
+  "name": "sysco",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tool.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "escodegen": "^2.0.0",
+    "esprima": "^4.0.1",
+    "glob": "^10.2.6"
+  }
+}
