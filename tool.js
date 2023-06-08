@@ -16,8 +16,6 @@ let shouldChangeFiles = false;
 process.argv.slice(2).forEach((value, index, array) => {
     if (value === '--folder') {
         folderName = array[index + 1];
-    } else if (value === '--outfilename') {
-        outputFileName = array[index + 1];
     } else if (value === 'change') {
         shouldChangeFiles = true;
     }
@@ -44,24 +42,6 @@ if (!folderName || !outputFileName) {
         // 3. Replace paths
         replacePathsInAst(ast, file, shouldChangeFiles);
 
-        // walkSimple(ast, {
-        //     NewExpression(node) {
-        //         if (node.callee.name === 'ModuleFederationPlugin') {
-        //             const configObject = node.arguments[0];
-        //             if (configObject.type === 'ObjectExpression') {
-        //                 for (const property of configObject.properties) {
-        //                     if (property.key.name === 'exposes') {
-        //                         exposes = property.value;
-        //                     }
-        //                     if (property.key.name === 'remotes') {
-        //                         remotes = property.value;
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // });
-        // 4. Write files
         if (shouldChangeFiles) {
             const newCode = generator.default(ast).code;
             fs.writeFileSync(file, newCode);
@@ -69,25 +49,6 @@ if (!folderName || !outputFileName) {
     });
 });
 
-async function getExposes(folderName) {
-    const indexFiles = await glob(`./${folderName}/**/index.js`, { ignore: ['node_modules/**', '**/*test.js'] });
-    const rootLevelFiles = await glob(`./${folderName}/app/*.{js,ts}`, { ignore: ['node_modules/**', '**/*test.js'] });
-
-    const exposes = Array.from(new Set([...indexFiles.map(file => {
-        const [_, ...rest] = file.split('\\')
-        return rest.join('/')
-    }), ...rootLevelFiles.map(file => {
-        const [_, ...rest] = file.split('\\')
-        return rest.join('/')
-    })]));
-    const exposesObj = new Map();
-    exposes.map(path => {
-        const [_, ...rest] = path.split('/');
-        const key = './' + rest.join('/').replaceAll('/index.js', '').replaceAll('.js', '');
-        exposesObj.set(key, './' + path.replaceAll('/index.js', '').replaceAll('.js', ''))
-    });
-    return exposes;
-}
 
 function replacePathsInAst(ast, currentFile, shouldChangeFiles) {
     traverse.default(ast, {

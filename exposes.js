@@ -1,21 +1,26 @@
 #!/usr/bin/env node
 
 import generator from '@babel/generator';
-import parser from '@babel/parser';
 import fs from 'fs';
 import { glob } from 'glob';
+import _traverse from "@babel/traverse";
+const traverse = _traverse.default;
+import chalk from 'chalk';
+import * as parser from '@babel/parser';
+import * as t from '@babel/types';
 
 let folderName;
 let outputFileName;
-let shouldChangeFiles = false;
+
+if (process.argv.length <= 2) {
+    console.log(chalk.red('No arguments provided'));
+}
 
 process.argv.slice(2).forEach((value, index, array) => {
     if (value === '--folder') {
         folderName = array[index + 1];
     } else if (value === '--outfilename') {
         outputFileName = array[index + 1];
-    } else if (value === 'change') {
-        shouldChangeFiles = true;
     }
 });
 
@@ -27,8 +32,7 @@ process.argv.slice(2).forEach((value, index, array) => {
     const exposes = await getExposes(folderName);
 
     const matchingFiles = files.filter((file) => file.endsWith(outputFileName));
-
-    if (shouldChangeFiles && matchingFiles.length > 0) {
+    if (outputFileName && matchingFiles.length > 0) {
         const outputFile = matchingFiles[0];
         const code = fs.readFileSync(outputFile, 'utf8');
         const ast = parser.parse(code, { sourceType: 'module' });
@@ -39,35 +43,28 @@ process.argv.slice(2).forEach((value, index, array) => {
         fs.writeFileSync(outputFile, newCode);
         console.log(`Replaced exposes in ${outputFile}`);
     } else {
-        console.log(`Would replace exposes in ${outputFileName}:`, exposes);
+        console.log(chalk.cyanBright(`Here are the exposes (if you want it to replace the exposes object pass the file name with --outfilename webpack.dev.js):\n`), exposes);
     }
 })();
 
 
 function replaceExposesInAst(ast, exposes) {
-    console.log('Replacing exposes in AST');
-
-    const code = generator.default(ast).code;
-
-    // Find the opening and closing curly braces
-    const openingBraceIndex = code.indexOf('{');
-    const closingBraceIndex = code.indexOf('}');
-
-    if (openingBraceIndex !== -1 && closingBraceIndex !== -1 && openingBraceIndex < closingBraceIndex) {
-        // Replace the content between the curly braces
-        const contentBetweenBraces = code.substring(openingBraceIndex + 1, closingBraceIndex).trim();
-        const newContent = Object.entries(exposes)
-            .map(([key, value]) => `${key}: ${value}`)
-            .join(', ');
-
-        const newCode = code.substring(0, openingBraceIndex + 1) + newContent + code.substring(closingBraceIndex);
-        const newAst = parser.parse(newCode, { sourceType: 'module' });
-
-        return newAst;
-    }
-
-    console.log('Unable to find the opening and closing curly braces');
-    return ast;
+    traverse(ast, {
+        ObjectExpression(path) {
+            path.node.properties.forEach((property) => {
+                if (
+                    t.isObjectProperty(property) &&
+                    t.isIdentifier(property.key) &&
+                    property.key.name === 'exposes'
+                ) {
+                    const newProperties = Object.entries(exposes).map(([key, value]) =>
+                        t.objectProperty(t.stringLiteral(key), t.stringLiteral(value))
+                    );
+                    property.value = t.objectExpression(newProperties);
+                }
+            });
+        },
+    });
 }
 
 async function getExposes(folderName) {

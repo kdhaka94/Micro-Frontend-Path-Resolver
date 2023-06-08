@@ -26,12 +26,8 @@ const devConfig = {
     name: process.env.DASHBOARD_MFE_NAME,
     filename: process.env.REMOTE_ENTRY,
     exposes: {
-      './Dashboard': './app',
-      './constants': './app/constants',
-      './actions': './app/actions',
-      './effects': './app/effects',
-      './reducer': './app/reducer',
-      './selectors': './app/selectors'
+      "./components/Something": "./app/components/Something",
+      "./selectors": "./app/selectors"
     },
     remotes: {
       ShellMfe: `${process.env.SHELL_MFE_NAME}@${process.env.SHELL_MFE_URL}${process.env.REMOTE_ENTRY}`,
