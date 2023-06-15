@@ -6,44 +6,49 @@ import { hideBin } from 'yargs/helpers';
 
 const argv = yargs(hideBin(process.argv)).argv;
 
-async function getFileHash(filePath) {
-  const hash = createHash('md5');
-  const data = fs.readFileSync(filePath);
+function compareDirectories(dir1, dir2) {
+  const files1 = fs.readdirSync(dir1);
+  const files2 = fs.readdirSync(dir2);
 
-  hash.update(data);
-  return hash.digest('hex');
-}
-
-async function compareDirectories(dir1, dir2) {
-  const [files1, files2] = await Promise.all([
-    fs.promises.readdir(dir1),
-    fs.promises.readdir(dir2),
-  ]);
-
-  const filesInBoth = files1.filter((file) => files2.includes(file));
-  const filesOnlyInDir1 = files1.filter((file) => !files2.includes(file));
-  const filesOnlyInDir2 = files2.filter((file) => !files1.includes(file));
-
-  const differingFiles = [];
-  const identicalFiles = [];
-
-  for (const file of filesInBoth) {
-    const [hash1, hash2] = await Promise.all([
-      getFileHash(path.join(dir1, file)),
-      getFileHash(path.join(dir2, file)),
-    ]);
-
-    if (hash1 !== hash2) {
-      differingFiles.push(file);
-    } else {
-      identicalFiles.push(file);
-    }
+  // Compare files in dir1 that are not in dir2
+  const uniqueFiles1 = files1.filter(file => !files2.includes(file));
+  for (const file of uniqueFiles1) {
+    const filePath = path.join(dir1, file);
+    console.log(`${filePath} is unique to ${dir1}`);
   }
 
-  return [differingFiles, identicalFiles, filesOnlyInDir1, filesOnlyInDir2];
+  // Compare files in dir2 that are not in dir1
+  const uniqueFiles2 = files2.filter(file => !files1.includes(file));
+  for (const file of uniqueFiles2) {
+    const filePath = path.join(dir2, file);
+    console.log(`${filePath} is unique to ${dir2}`);
+  }
+
+  // Compare files that are in both directories
+  const commonFiles = files1.filter(file => files2.includes(file));
+  for (const file of commonFiles) {
+    const filePath1 = path.join(dir1, file);
+    const filePath2 = path.join(dir2, file);
+    const stats1 = fs.statSync(filePath1);
+    const stats2 = fs.statSync(filePath2);
+
+    if (stats1.isDirectory() && stats2.isDirectory()) {
+      // Recursively compare subdirectories
+      compareDirectories(filePath1, filePath2);
+    } else if (stats1.isFile() && stats2.isFile()) {
+      // Compare file contents
+      const contents1 = fs.readFileSync(filePath1, 'utf8');
+      const contents2 = fs.readFileSync(filePath2, 'utf8');
+      if (contents1 !== contents2) {
+        console.log(`${filePath1} and ${filePath2} have different contents`);
+      }
+    } else {
+      console.log(`${filePath1} and ${filePath2} are not the same type of file`);
+    }
+  }
 }
 
-if(!argv.dir1 || !argv.dir2){
+if (!argv.dir1 || !argv.dir2) {
   console.error("Please provide two directory paths with --dir1 and --dir2");
   process.exit(1);
 }

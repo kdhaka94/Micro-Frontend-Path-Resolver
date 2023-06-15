@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import fs from 'fs';
 import parser from '@babel/parser';
 import traverse from '@babel/traverse';
@@ -21,14 +19,17 @@ process.argv.slice(2).forEach((value, index, array) => {
     }
 });
 
-if (!folderName || !outputFileName) {
+if (!folderName) {
     console.error('You must provide both --folder and --outfilename arguments.');
     process.exit(1);
 }
 
 // 1. Discover paths
 (async () => {
-    const files = await glob("./project/**/*.js", { ignore: ['node_modules/**', '**/*test.js'] });
+    const path = `${folderName}/**/*.js`;
+    console.log({ path })
+    const files = await glob(path, { ignore: ['node_modules/**', '**/*test.js'] });
+    console.log({ files })
     files.forEach((file) => {
         // Skip test files
         if (file.endsWith('test.js')) {
@@ -37,7 +38,9 @@ if (!folderName || !outputFileName) {
 
         // 2. Parse files
         const code = fs.readFileSync(file, 'utf8');
+        console.log(chalk.red('1'))
         const ast = parser.parse(code, { sourceType: 'module' });
+        console.log(chalk.red('1'))
 
         // 3. Replace paths
         replacePathsInAst(ast, file, shouldChangeFiles);
@@ -47,7 +50,7 @@ if (!folderName || !outputFileName) {
             fs.writeFileSync(file, newCode);
         }
     });
-});
+})();
 
 
 function replacePathsInAst(ast, currentFile, shouldChangeFiles) {
