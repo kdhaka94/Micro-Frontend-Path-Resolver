@@ -35,8 +35,10 @@ const getPullRequests = async (owner, repo) => {
       pull_number: pr.number,
     });
 
-    if (comments.length > 0) {
-      output += ` - ${chalk.magenta('Has comments')}`;
+    const unansweredComments = comments.some(comment => comment.user.login !== pr.user.login);
+
+    if (unansweredComments) {
+      output += ` - ${chalk.magenta('Has unanswered comments')}`;
     }
 
     console.log(output);
