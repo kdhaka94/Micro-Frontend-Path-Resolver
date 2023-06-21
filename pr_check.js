@@ -23,7 +23,7 @@ const getPullRequests = async (owner, repo) => {
   const CXMFEBranches = pulls.filter(pr => pr.head.ref.includes('CXMFE'));
 
   for (let pr of CXMFEBranches) {
-    let output = `Pull Request: ${chalk.green(pr.html_url)} - Branch: ${chalk.blue(pr.head.ref)} - Owner: ${chalk.yellow(pr.user.login)}`;
+    let output = `Open Pull Request: ${chalk.green(pr.html_url)} - Branch: ${chalk.blue(pr.head.ref)} - Owner: ${chalk.yellow(pr.user.login)}`;
 
     if (pr.mergeable_state === 'dirty') {
       output += ` - ${chalk.red('Has conflicts')}`;
@@ -61,7 +61,8 @@ const getPullRequests = async (owner, repo) => {
       output += ` - ${chalk.magenta('Has unanswered comments')}`;
     }
 
-    console.log(output);
+    if (output.includes('conflicts') || output.includes('unanswered'))
+      console.log(output);
   }
 }
 
