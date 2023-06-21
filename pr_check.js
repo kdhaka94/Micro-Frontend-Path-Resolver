@@ -60,9 +60,10 @@ const getPullRequests = async (owner, repo) => {
     if (unansweredComments) {
       output += ` - ${chalk.magenta('Has unanswered comments')}`;
     }
-
-    if (output.includes('conflicts') || output.includes('unanswered'))
+    const status = output.includes('conflicts') || output.includes('unanswered');
+    if (status)
       console.log(output);
+    else console.log(`${repo} - ${chalk.green('All OK')}`)
   }
 }
 
