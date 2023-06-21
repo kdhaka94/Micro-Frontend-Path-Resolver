@@ -5,7 +5,7 @@
   "main": "tool.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tool.js"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +23,7 @@
     "esprima": "^4.0.1",
     "glob": "^10.2.6",
     "inquirer": "^9.2.7",
+    "readline": "^1.3.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
