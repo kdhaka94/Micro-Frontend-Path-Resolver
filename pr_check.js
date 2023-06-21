@@ -17,14 +17,16 @@ const getPullRequests = async (owner, repo) => {
   let pulls = [];
 
   // First, get the total number of pull requests
-  const { data: firstPagePulls } = await octokit.pulls.list({
+  const response = await octokit.pulls.list({
     owner,
     repo,
     state: 'open',
     per_page: 1,
   });
 
-  const totalPulls = octokit.rest.pulls.get.response.headers.link.match(/&page=(\d+)>; rel="last"/)[1];
+  const linkHeader = response.headers.link;
+  const lastPageMatch = linkHeader.match(/&page=(\d+)>; rel="last"/);
+  const totalPulls = lastPageMatch ? parseInt(lastPageMatch[1], 10) : 0;
 
   // Calculate the page number to start from
   const startPage = Math.max(1, totalPulls - 4);
