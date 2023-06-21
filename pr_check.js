@@ -33,6 +33,7 @@ const getPullRequests = async (owner, repo) => {
   if (totalPages * 100 - totalPulls > 0) {
     totalPages += 1;
   }
+  let all_ok = true;
 
   for (let page = 1; page <= totalPages; page++) {
     const { data } = await octokit.pulls.list({
@@ -52,6 +53,7 @@ const getPullRequests = async (owner, repo) => {
     let output = `Open Pull Request: ${chalk.green(pr.html_url)} - Branch: ${chalk.blue(pr.head.ref)} - Owner: ${chalk.yellow(pr.user.login)}`;
 
     if (pr.mergeable_state === 'dirty') {
+      all_ok = false;
       output += ` - ${chalk.red('Has conflicts')}`;
     }
 
@@ -61,33 +63,36 @@ const getPullRequests = async (owner, repo) => {
       pull_number: pr.number,
     });
 
-    const unansweredComments = comments.some(comment => {
-      // Check if the comment is from someone other than the PR owner
+    let unansweredComments = false;
+    for (const comment of comments) {
       if (comment.user.login !== pr.user.login) {
-        // Find all replies to the comment
         const replies = comments.filter(reply => reply.in_reply_to_id === comment.id);
-
-        // If there are no replies, the comment is unanswered
-        if (replies.length === 0) {
-          return true;
-        }
-
-        // If the most recent reply is not from the PR owner, the comment is unanswered
-        const mostRecentReply = replies[replies.length - 1];
-        if (mostRecentReply.user.login !== pr.user.login) {
-          return true;
+        if (replies.length === 0 || replies[replies.length - 1].user.login !== pr.user.login) {
+          unansweredComments = true;
+          break;
         }
       }
-
-      // Otherwise, the comment is considered answered
-      return false;
-    });
+    }
 
     if (unansweredComments) {
+      all_ok = false;
       output += ` - ${chalk.magenta('Has unanswered comments')}`;
     }
-    const status = output.includes('conflicts') || output.includes('unanswered');
-    if (!status) {
+    // Check the status of the pipelines for the commit associated with the pull request
+    const { data: checkRuns } = await octokit.checks.listForRef({
+      owner,
+      repo,
+      ref: pr.head.sha,
+    });
+
+    // If any of the check runs have failed, add a note to the output
+    const hasFailingPipelines = checkRuns.check_runs.some(checkRun => checkRun.conclusion === 'failure');
+    if (hasFailingPipelines) {
+      all_ok = false;
+      output += ` - ${chalk.red('Pipeline is failing')}`;
+    }
+
+    if (all_ok) {
       output += ` - ${chalk.green('All OK')}`
     }
     console.log(output);
