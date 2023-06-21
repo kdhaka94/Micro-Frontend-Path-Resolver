@@ -35,13 +35,33 @@ const getPullRequests = async (owner, repo) => {
       pull_number: pr.number,
     });
 
-    const unansweredComments = comments.some(comment => comment.user.login !== pr.user.login);
+    const unansweredComments = comments.some(comment => {
+      // Check if the comment is from someone other than the PR owner
+      if (comment.user.login !== pr.user.login) {
+        // Find all replies to the comment
+        const replies = comments.filter(reply => reply.in_reply_to_id === comment.id);
+
+        // If there are no replies, the comment is unanswered
+        if (replies.length === 0) {
+          return true;
+        }
+
+        // If the most recent reply is not from the PR owner, the comment is unanswered
+        const mostRecentReply = replies[replies.length - 1];
+        if (mostRecentReply.user.login !== pr.user.login) {
+          return true;
+        }
+      }
+
+      // Otherwise, the comment is considered answered
+      return false;
+    });
 
     if (unansweredComments) {
       output += ` - ${chalk.magenta('Has unanswered comments')}`;
     }
-    if (output.includes('conflicts') || output.includes('unanswered'))
-      console.log(output);
+
+    console.log(output);
   }
 }
 
