@@ -65,20 +65,35 @@ const main = async () => {
     repos.push(newRepo);
     // Save repos to file
     fs.writeFileSync('repos.json', JSON.stringify(repos));
-    const [, , , owner, repoName] = newRepo.split('/'); // Corrected line
+    const [, , , owner, repoName] = newRepo.split('/');
     await getPullRequests(owner, repoName);
   } else if (repo === 'Check all repos') {
     for (let repoUrl of repos) {
-      const [, , , owner, repoName] = repoUrl.split('/'); // Corrected line
+      const [, , , owner, repoName] = repoUrl.split('/');
       await getPullRequests(owner, repoName);
     }
   } else {
-    const [, , , owner, repoName] = repo.split('/'); // Corrected line
+    const [, , , owner, repoName] = repo.split('/');
     await getPullRequests(owner, repoName);
   }
 
+  const { shouldContinue } = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'shouldContinue',
+      message: 'Do you want to check another repo?',
+      default: false,
+    },
+  ]);
 
-  main();  // run again after finishing
+  return shouldContinue;
 }
 
-main();
+const run = async () => {
+  let continueRunning = true;
+  while (continueRunning) {
+    continueRunning = await main();
+  }
+}
+
+run();
