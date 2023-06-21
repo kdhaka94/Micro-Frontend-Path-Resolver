@@ -14,11 +14,32 @@ if (fs.existsSync('repos.json')) {
 const octokit = new Octokit({ auth: `your_personal_token` });
 
 const getPullRequests = async (owner, repo) => {
-  const { data: pulls } = await octokit.pulls.list({
+  let pulls = [];
+
+  // First, get the total number of pull requests
+  const { data: firstPagePulls } = await octokit.pulls.list({
     owner,
     repo,
-    state: 'open'
+    state: 'open',
+    per_page: 1,
   });
+
+  const totalPulls = octokit.rest.pulls.get.response.headers.link.match(/&page=(\d+)>; rel="last"/)[1];
+
+  // Calculate the page number to start from
+  const startPage = Math.max(1, totalPulls - 4);
+
+  for (let page = startPage; page <= totalPulls; page++) {
+    const { data } = await octokit.pulls.list({
+      owner,
+      repo,
+      state: 'open',
+      page,
+      per_page: 100, // Fetch up to 100 PRs per page
+    });
+
+    pulls = pulls.concat(data);
+  }
 
   const CXMFEBranches = pulls.filter(pr => pr.head.ref.includes('CXMFE'));
 
