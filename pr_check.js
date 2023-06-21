@@ -11,7 +11,7 @@ if (fs.existsSync('repos.json')) {
 }
 
 // Create a personal access token at https://github.com/settings/tokens
-const octokit = new Octokit({ auth: `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` });
+const octokit = new Octokit({ auth: `your_personal_access_token` });
 
 const getPullRequests = async (owner, repo) => {
   let pulls = [];
