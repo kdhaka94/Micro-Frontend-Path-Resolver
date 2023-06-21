@@ -1,1 +1,10 @@
-[]
+[
+    "https://github.com/SyscoCorporation/mss-frontend",
+    "https://github.com/SyscoCorporation/cx-shop-fe-account-manager",
+    "https://github.com/SyscoCorporation/cx-shop-fe-product",
+    "https://github.com/SyscoCorporation/cx-shop-fe-deals",
+    "https://github.com/SyscoCorporation/cx-shop-fe-delivery",
+    "https://github.com/SyscoCorporation/cx-shop-fe-dashboard",
+    "https://github.com/SyscoCorporation/cx-shop-fe-catalog",
+    "https://github.com/SyscoCorporation/mss-mfe-common"
+]

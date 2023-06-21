@@ -11,7 +11,7 @@ if (fs.existsSync('repos.json')) {
 }
 
 // Create a personal access token at https://github.com/settings/tokens
-const octokit = new Octokit({ auth: `your_personal_token` });
+const octokit = new Octokit({ auth: `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` });
 
 const getPullRequests = async (owner, repo) => {
   let pulls = [];
@@ -29,9 +29,12 @@ const getPullRequests = async (owner, repo) => {
   const totalPulls = lastPageMatch ? parseInt(lastPageMatch[1], 10) : 0;
 
   // Calculate the page number to start from
-  const startPage = Math.max(1, totalPulls - 4);
+  const totalPages = totalPulls / 100;
+  if (totalPages * 100 - totalPulls > 0) {
+    totalPages += 1;
+  }
 
-  for (let page = startPage; page <= totalPulls; page++) {
+  for (let page = 1; page <= totalPages; page++) {
     const { data } = await octokit.pulls.list({
       owner,
       repo,

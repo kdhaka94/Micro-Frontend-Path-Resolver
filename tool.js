@@ -27,9 +27,7 @@ if (!folderName) {
 // 1. Discover paths
 (async () => {
     const path = `${folderName}/**/*.js`;
-    console.log({ path })
     const files = await glob(path, { ignore: ['node_modules/**', '**/*test.js'] });
-    console.log({ files })
     files.forEach((file) => {
         // Skip test files
         if (file.endsWith('test.js')) {
@@ -38,9 +36,8 @@ if (!folderName) {
 
         // 2. Parse files
         const code = fs.readFileSync(file, 'utf8');
-        console.log(chalk.red('1'))
-        const ast = parser.parse(code, { sourceType: 'module' });
-        console.log(chalk.red('1'))
+        console.log({ code })
+        const ast = parser.parse(code, { sourceType: 'module', plugins: ['decorators','jsx'] });
 
         // 3. Replace paths
         replacePathsInAst(ast, file, shouldChangeFiles);
