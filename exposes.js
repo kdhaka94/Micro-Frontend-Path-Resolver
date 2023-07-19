@@ -82,8 +82,9 @@ async function getExposes(folderName) {
     console.log({ exposes })
     exposes.map(path => {
         const [_, ...rest] = path.split('/');
-        const key = './' + rest.join('/').replaceAll('/index.js', '').replaceAll('.js', '');
-        exposesObj.set(key, './' + path.replaceAll('/index.js', '').replaceAll('.js', ''))
+        const key = './' + rest.join('/').replace('/index.js', '').replace('.js', '');
+        exposesObj.set(key, './' + path.replace('/index.js', '').replace('.js', ''))
     });
+    console.log({ exposesObj })
     return Object.fromEntries(exposesObj);
 }

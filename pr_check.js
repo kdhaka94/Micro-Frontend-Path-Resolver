@@ -11,7 +11,7 @@ if (fs.existsSync('repos.json')) {
 }
 
 // Create a personal access token at https://github.com/settings/tokens
-const octokit = new Octokit({ auth: `your_personal_access_token` });
+const octokit = new Octokit({ auth: `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` });
 
 const getPullRequests = async (owner, repo) => {
   let pulls = [];
@@ -153,3 +153,67 @@ const run = async () => {
 }
 
 run();
+
+const a = {
+  ENABLE_NON_SHOP_ORDER_MODIFICATION: "true",
+  FRAMEWORK_ID: "mss",
+  FRAMEWORK_LANGUAGE: "en",
+  HOST: "localhost",
+  PORTAL_URL: "https://cxcp-customer-portal-dev.morpheus-np.cx-shop-nonprod.sysco-go.com",
+  REQUEST_TIMEOUT: "50000",
+  WS_AUTH_ID: "frontendUser",
+  WS_URL: "http://test.com",
+  ACCOUNT_MANAGER_MIN_ORDERS_PER_PAGE: "20",
+  CDN_HOST: "https://cdn.cx-shop-nonprod.sysco-go.com",
+  DOCKER_IMAGE_TAG: "mss-frontend:local:latest",
+  INTERCOM_APP_ID: "y93rlcki",
+  MSS_FE_CONNECTION_CHECK_INTERVAL: "360000",
+  OPTIMIZELY_SDK_KEY_V2: "DYTdoKyRNCc6WwZ6PnExR",
+  OPTIMIZELY_DATAFILE_UPDATE_INTERVAL: "10000",
+  PORT: "8888",
+  SYSCO_PAY_REDIRECT_BASE_URL: "https://syscofull-syscofull.cs77.force.com/v2/s/",
+  ACCOUNT_MANAGER_SELECT_ALL_CUSTOMER_LIMIT: "1000",
+  COMMISSION_CALCULATOR_BFF: "https://list-bff.sysco.com:9090",
+  ENV: "local",
+  NODE_ENV: "dev",
+  MA_AUTHENTICATION_TYPE: "AD",
+  OPTIMIZELY_DATA_FILE_URL: "https://cdn.optimizely.com/datafiles",
+  OPTIMIZELY_SNIPPET_URL: "https://cdn.cx-shop-nonprod.sysco-go.com/js/21664070285.js",
+  SERVICE_URL: "https://localhost:6060",
+  BFF_GATEWAY_URL: "https://cx-gateway-api-dev.morpheus-np.cx-shop-nonprod.us-east-1.aws.sysco.net/graphql",
+  SIGNUP_REDIRECT_URL: "https://portal.sysco.com/register",
+  UPSCOPE_APP_ID: "cdfwwixJfg",
+  WS_REALM: "test",
+  ACCOUNT_MANAGER_CUSTOMERS_PAGE_SIZE: "40",
+  BECOME_A_CUSTOMER_URL: "https://sysco.com/Contact/Contact/Become-A-Customer",
+  ELASTIC_APM_SERVER: "https://apm.cx-shop-nonprod.sysco-go.com",
+  ENABLE_PERMISSION_CHECK: "false",
+  PRICE_EXCEPTIONS_URL: "https://dds-qa.prcp-rm-np.us-east-1.aws.sysco.net/app/exceptions",
+  SYSCO_PAY_URL: "https://myapps.microsoft.com/signin/Sysco%20Pay%20Dev/aed65d7a-5fe3-44bd-b044-7a10f2be9d17?tenantId=b7aa4308-bf33-414f-9971-6e0c972cbe5d",
+  SOTF_URL: "https://spogstg.suppliesonthefly.com",
+  CA_NUTRITION_FACTS_URL: "https://www.syscoitems.ca",
+  INVENTORY_MERCHANDISING_URL: "https://inventory-management.merch-qa.cloud.sysco.net/inventory-management",
+  SYSCO_IMAGE_SERVICE_URL: "https://image.sysco.com/image-server/product/image",
+  SYSCO_PAY_SSO_URL: "https://secure-q.sysco.com/app/syscoconsumer_syscopaysbx_1/exk1ly81oabezU5MM1d7/sso/saml",
+  DASHBOARD_MFE_NAME: "DashboardMfe",
+  DASHBOARD_MFE_URL: "http://localhost:8082/",
+  BRANDS_MFE_NAME: "BrandsMfe",
+  BRANDS_MFE_URL: "http://localhost:8081/",
+  CATALOG_MFE_NAME: "CatalogMfe",
+  CATALOG_MFE_URL: "http://localhost:8086/",
+  COMMON_MFE_NAME: "CommonMfe",
+  COMMON_MFE_URL: "http://localhost:8080/",
+  SHELL_MFE_NAME: "ShellMfe",
+  SHELL_MFE_URL: "http://localhost:8888/",
+  PRODUCT_MFE_NAME: "ProductMfe",
+  PRODUCT_MFE_URL: "http://localhost:8084/",
+  ACCOUNT_MFE_NAME: "AccountManagerMfe",
+  ACCOUNT_MFE_URL: "http://localhost:8087/",
+  CATALOG_MFE_NAME: "CatalogMfe",
+  CATALOG_MFE_URL: "http://localhost:8086/",
+  REMOTE_ENTRY: "remoteEntry.js",
+  DEALS_MFE_NAME: "DealsMfe",
+  DEALS_MFE_URL: "http://localhost:8085/",
+  DELIVERY_MFE_NAME: "DeliveryMfe",
+  DELIVERY_MFE_URL: "http://localhost:8083/",
+}
